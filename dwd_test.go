@@ -15,10 +15,10 @@ func TestStations(t *testing.T) {
 	}
 }
 
-func TestForecast(t *testing.T) {
+func TestOverview(t *testing.T) {
 	var s Session
 	s.Init()
-	wfs, err := s.Forecast("06676")
+	wfs, err := s.Overview("06676")
 	if err != nil {
 		t.Fatal(err)
 	}

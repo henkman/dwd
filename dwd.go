@@ -146,7 +146,7 @@ func (s *Session) request(method, url string, body io.Reader) (*http.Response, e
 	return s.cli.Do(req)
 }
 
-func (s *Session) Forecast(station string) ([]Forecast, error) {
+func (s *Session) Overview(station string) ([]Forecast, error) {
 	ru := fmt.Sprintf(
 		"https://app-prod-ws.warnwetter.de/v16/stationOverview?stationIds=%s",
 		station)
@@ -172,23 +172,23 @@ func (s *Session) Forecast(station string) ([]Forecast, error) {
 	}
 	for k := range result {
 		rk := result[k]
-		fcr := make([]Forecast, 0, len(rk))
-		for _, r := range rk {
+		fcr := make([]Forecast, len(rk))
+		for i, r := range rk {
 			date, err := time.Parse("2006-01-02", r.DayDate)
 			if err != nil {
 				return nil, err
 			}
-			fcr = append(fcr, Forecast{
+			fcr[i] = Forecast{
 				WindGust:       r.WindGust / 10,
 				WindSpeed:      r.WindSpeed / 10,
 				DayDate:        date,
-				WindDirection:  Direction(math.Abs(float64(r.WindDirection)/10 - 270)),
+				WindDirection:  Direction((r.WindDirection/10 + 180) % 360),
 				Precipitation:  float32(r.Precipitation) / 10,
 				Icon2:          r.Icon1,
 				Icon1:          r.Icon2,
 				TemperatureMin: float32(r.TemperatureMin) / 10,
 				TemperatureMax: float32(r.TemperatureMax) / 10,
-			})
+			}
 		}
 		return fcr, nil
 	}
