@@ -129,6 +129,7 @@ func (s *Session) Init() error {
 		return err
 	}
 	s.cli.Jar = jar
+	s.cli.Timeout = time.Second * 10
 	return nil
 }
 
